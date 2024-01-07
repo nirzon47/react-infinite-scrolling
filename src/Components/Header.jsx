@@ -1,7 +1,7 @@
 const Header = () => {
 	return (
 		<header>
-			<h1 className='font-ephesis text-5xl text-center mb-6'>
+			<h1 className='font-ephesis text-5xl md:text-6xl text-center mb-6'>
 				Infinite Images
 			</h1>
 		</header>
