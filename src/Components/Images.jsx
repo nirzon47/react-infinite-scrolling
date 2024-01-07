@@ -1,18 +1,23 @@
 import axios from 'axios'
+import InfiniteScroll from 'react-infinite-scroll-component'
 import { useEffect, useRef, useState } from 'react'
 
 const Images = () => {
 	const [images, setImages] = useState([])
 	const [page, setPage] = useState(1)
 	const [loading, setLoading] = useState(false)
-	const [debounce, setDebounce] = useState(null)
 	const loaderRef = useRef(null)
 	const [error, setError] = useState(false)
 	const [errorText, setErrorText] = useState('')
 
+	/**
+	 * Fetches images from the Unsplash API.
+	 *
+	 * @return {Promise<void>} A promise that resolves when the images are fetched.
+	 */
 	const fetchImages = async () => {
+		setLoading(true)
 		try {
-			setLoading(true)
 			const response = await axios.get(
 				`https://api.unsplash.com/photos/random/?client_id=${process.env.REACT_APP_API_KEY}&count=30&page=${page}`
 			)
@@ -27,34 +32,35 @@ const Images = () => {
 		}
 	}
 
-	const handleScroll = () => {
-		if (debounce) {
-			clearTimeout(debounce)
-		}
-
-		if (window.scrollY + window.innerHeight >= document.body.offsetHeight) {
-			setDebounce(
-				setTimeout(() => {
-					fetchImages()
-				}, 500)
-			)
-		}
+	const loadMoreImages = () => {
+		setPage((prevPage) => prevPage + 1)
+		fetchImages()
 	}
+
+	/**
+	 * Handle scroll event and fetch images when scrolling to the bottom of the page.
+	 *
+	 * @return {undefined} No return value.
+	 */
 
 	useEffect(() => {
 		fetchImages()
 	}, [])
 
-	useEffect(() => {
-		window.addEventListener('scroll', handleScroll)
-
-		return () => {
-			window.removeEventListener('scroll', handleScroll)
-		}
-	})
-
 	return (
-		<>
+		<InfiniteScroll
+			dataLength={images.length}
+			next={loadMoreImages}
+			hasMore={!error && !loading}
+			loader={
+				<div className='flex justify-center items-center my-4'>
+					<span
+						ref={loaderRef}
+						className='loading loading-dots loading-lg'
+					></span>
+				</div>
+			}
+		>
 			<div className='columns-1 sm:columns-2 md:columns-3 lg:columns-4 pb-8'>
 				{images.map((image) => {
 					return (
@@ -67,20 +73,12 @@ const Images = () => {
 					)
 				})}
 			</div>
-			{loading && (
-				<div className='flex justify-center items-center my-4'>
-					<span
-						ref={loaderRef}
-						className='loading loading-dots loading-lg'
-					></span>
-				</div>
-			)}
 			{error && (
 				<p className='text-red-400 font-bold text-xl text-center'>
 					ERROR! {errorText}
 				</p>
 			)}
-		</>
+		</InfiniteScroll>
 	)
 }
 
