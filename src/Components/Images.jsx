@@ -17,6 +17,7 @@ const Images = () => {
 	 */
 	const fetchImages = async () => {
 		setLoading(true)
+
 		try {
 			const response = await axios.get(
 				`https://api.unsplash.com/photos/random/?client_id=${process.env.REACT_APP_API_KEY}&count=30&page=${page}`
@@ -74,6 +75,14 @@ const Images = () => {
 					)
 				})}
 			</div>
+			{loading && (
+				<div className='flex justify-center items-center my-4'>
+					<span
+						ref={loaderRef}
+						className='loading loading-dots loading-lg'
+					></span>
+				</div>
+			)}
 			{error && (
 				<p className='text-red-400 font-bold text-xl text-center'>
 					ERROR! {errorText}
