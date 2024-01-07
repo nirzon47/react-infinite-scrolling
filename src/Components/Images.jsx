@@ -32,16 +32,16 @@ const Images = () => {
 		}
 	}
 
+	/**
+	 * Loads more images by incrementing the page number and calling the fetchImages function.
+	 *
+	 * @param {type} paramName - description of parameter
+	 * @return {type} description of return value
+	 */
 	const loadMoreImages = () => {
 		setPage((prevPage) => prevPage + 1)
 		fetchImages()
 	}
-
-	/**
-	 * Handle scroll event and fetch images when scrolling to the bottom of the page.
-	 *
-	 * @return {undefined} No return value.
-	 */
 
 	useEffect(() => {
 		fetchImages()
@@ -60,6 +60,7 @@ const Images = () => {
 					></span>
 				</div>
 			}
+			scrollThreshold={1.0}
 		>
 			<div className='columns-1 sm:columns-2 md:columns-3 lg:columns-4 pb-8'>
 				{images.map((image) => {
